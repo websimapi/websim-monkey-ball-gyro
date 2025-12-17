@@ -36,21 +36,8 @@ export class LevelManager {
     }
     
     setVisualTilt(tiltX, tiltZ, pivot) {
-        // Tilt the level container to match the gravity vector roughly
-        // Gravity X/Z are applied.
-        // We want the floor to look like it's tilting down in the direction of gravity.
-        
-        // If gravity pulls +X, floor should rotate -Z (bank right)
-        // If gravity pulls +Z, floor should rotate +X (pitch down)
-        
-        // Smoothly update rotation
-        const euler = new THREE.Euler(tiltX, 0, tiltZ, 'XYZ');
-        this.levelGroup.setRotationFromEuler(euler);
-        
-        // Optional: Keep level centered around ball visually? 
-        // No, in Monkey Ball the level rotates around the center of the world usually.
-        // But if the ball is far away, it looks weird.
-        // Let's just rotate around 0,0,0.
+        // Keep level visuals aligned with physics to avoid apparent clipping;
+        // board tilt is simulated purely via gravity, so we don't rotate levelGroup here.
     }
 
     loadLevel(levelNum) {
