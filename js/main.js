@@ -86,6 +86,7 @@ window.showOverlay = (title, btnText, callback) => {
     buttons.next = newBtn;
     
     buttons.next.addEventListener('click', () => {
+        showMenu(null);
         if (callback) callback();
     });
     
