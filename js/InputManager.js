@@ -26,9 +26,7 @@ export class InputManager {
         if (x === null || y === null) return; // Desktop
         
         this.tilt.x = Math.max(-1, Math.min(1, x / maxTilt));
-        this.tilt.y = Math.max(-1, Math.min(1, (y - 30) / maxTilt)); // Bias y by 30 deg for comfortable holding angle? 
-        // Actually for a flat game, user holds phone flat (beta ~ 0).
-        // Let's assume flat hold.
+        // Assume flat hold (0 degrees) is neutral.
         this.tilt.y = Math.max(-1, Math.min(1, y / maxTilt));
     }
 
