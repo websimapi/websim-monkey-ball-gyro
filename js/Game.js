@@ -29,6 +29,16 @@ export class Game {
         
         this.cameraOffset = new THREE.Vector3(0, 10, 10);
         this.cameraLerpFactor = 0.12;
+
+        // Dash / charge state
+        this.dashState = {
+            charging: false,
+            startX: 0,
+            startY: 0,
+            currentX: 0,
+            currentY: 0,
+            startTime: 0
+        };
     }
 
     init() {
@@ -76,6 +86,9 @@ export class Game {
         
         // Events
         window.addEventListener('resize', () => this.onResize());
+
+        // Dash controls (touch)
+        this.setupDashControls();
         
         // Initial render
         this.renderer.render(this.scene, this.camera);
@@ -211,6 +224,97 @@ export class Game {
         }
         
         this.renderer.render(this.scene, this.camera);
+    }
+
+    setupDashControls() {
+        const target = this.renderer.domElement;
+
+        // Helper to ignore touches when UI menus are on top
+        const isInMenu = (event) => {
+            const elem = document.elementFromPoint(
+                event.touches && event.touches[0] ? event.touches[0].clientX : event.clientX,
+                event.touches && event.touches[0] ? event.touches[0].clientY : event.clientY
+            );
+            return elem && elem.closest('.menu-overlay') && !elem.closest('.hidden');
+        };
+
+        target.addEventListener('touchstart', (e) => {
+            if (!this.isPlaying) return;
+            if (isInMenu(e)) return;
+            if (e.touches.length > 1) return; // single touch only
+
+            const t = e.touches[0];
+            this.dashState.charging = true;
+            this.dashState.startX = this.dashState.currentX = t.clientX;
+            this.dashState.startY = this.dashState.currentY = t.clientY;
+            this.dashState.startTime = performance.now();
+
+            e.preventDefault();
+        }, { passive: false });
+
+        target.addEventListener('touchmove', (e) => {
+            if (!this.isPlaying) return;
+            if (!this.dashState.charging) return;
+
+            const t = e.touches[0];
+            this.dashState.currentX = t.clientX;
+            this.dashState.currentY = t.clientY;
+
+            e.preventDefault();
+        }, { passive: false });
+
+        const endCharge = (clientX, clientY) => {
+            if (!this.isPlaying) return;
+            if (!this.dashState.charging) return;
+
+            this.dashState.charging = false;
+
+            const dx = clientX - this.dashState.startX;
+            const dy = clientY - this.dashState.startY;
+
+            const len = Math.hypot(dx, dy);
+            if (!this.ballBody || len < 10) {
+                // Too small a swipe, ignore
+                return;
+            }
+
+            // Screen X => world +X, screen Y => world -Z
+            let dirX = dx / len;
+            let dirZ = -dy / len;
+
+            // Charge time determines strength
+            const now = performance.now();
+            const holdMs = now - this.dashState.startTime;
+            const maxChargeMs = 1200; // cap charge at ~1.2s
+            const charge = Math.min(holdMs / maxChargeMs, 1);
+
+            const baseStrength = 8;
+            const extraStrength = 16;
+            const strength = baseStrength + extraStrength * charge;
+
+            const impulse = new CANNON.Vec3(
+                dirX * strength,
+                strength * 0.5, // slight upward jump
+                dirZ * strength
+            );
+
+            this.ballBody.applyImpulse(impulse, this.ballBody.position);
+        };
+
+        target.addEventListener('touchend', (e) => {
+            if (!this.dashState.charging) return;
+
+            // Use last known finger position
+            const x = this.dashState.currentX;
+            const y = this.dashState.currentY;
+            endCharge(x, y);
+
+            e.preventDefault();
+        }, { passive: false });
+
+        target.addEventListener('touchcancel', () => {
+            this.dashState.charging = false;
+        });
     }
     
     levelComplete() {
