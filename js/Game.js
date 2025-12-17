@@ -37,8 +37,13 @@ export class Game {
             startY: 0,
             currentX: 0,
             currentY: 0,
-            startTime: 0
+            startTime: 0,
+            dirX: 0,
+            dirZ: 0
         };
+
+        // Visual arrow for dash direction
+        this.dashArrow = null;
     }
 
     init() {
@@ -83,6 +88,7 @@ export class Game {
         
         // Create Ball (Player)
         this.createPlayer();
+        this.initDashArrow();
         
         // Events
         window.addEventListener('resize', () => this.onResize());
@@ -128,6 +134,76 @@ export class Game {
             ccdIterations: 10
         });
         this.world.addBody(this.ballBody);
+    }
+
+    initDashArrow() {
+        // Simple arrow: thin cylinder + cone tip, pointing along +Z in local space
+        const group = new THREE.Group();
+
+        const shaftGeom = new THREE.CylinderGeometry(0.05, 0.05, 1, 8);
+        const tipGeom = new THREE.ConeGeometry(0.12, 0.35, 12);
+        const mat = new THREE.MeshBasicMaterial({ color: 0xff4444 });
+
+        const shaft = new THREE.Mesh(shaftGeom, mat);
+        const tip = new THREE.Mesh(tipGeom, mat);
+
+        // Position so that base of shaft is at origin and tip extends along +Z
+        shaft.rotation.x = Math.PI / 2;
+        tip.rotation.x = Math.PI / 2;
+
+        shaft.position.z = 0.5;
+        tip.position.z = 1.0;
+
+        group.add(shaft);
+        group.add(tip);
+
+        group.visible = false;
+        this.scene.add(group);
+        this.dashArrow = group;
+    }
+
+    setDashArrowVisible(visible) {
+        if (!this.dashArrow) return;
+        this.dashArrow.visible = visible;
+    }
+
+    updateDashArrow() {
+        if (!this.dashArrow || !this.ballMesh || !this.dashState.charging) return;
+
+        const dirX = this.dashState.dirX;
+        const dirZ = this.dashState.dirZ;
+        const len = Math.hypot(dirX, dirZ);
+        if (len < 0.01) {
+            this.setDashArrowVisible(false);
+            return;
+        }
+
+        // Charge amount affects arrow length
+        const now = performance.now();
+        const holdMs = now - this.dashState.startTime;
+        const maxChargeMs = 1200;
+        const charge = Math.min(holdMs / maxChargeMs, 1);
+
+        const baseLen = 0.8;
+        const extraLen = 1.5;
+        const arrowLen = baseLen + extraLen * charge;
+
+        // Position arrow slightly above the ball
+        this.dashArrow.position.copy(this.ballMesh.position);
+        this.dashArrow.position.y += 0.8;
+
+        // Point arrow along direction on XZ plane
+        const dir = new THREE.Vector3(dirX, 0, dirZ).normalize();
+        const target = new THREE.Vector3().copy(this.dashArrow.position).add(dir);
+
+        this.dashArrow.lookAt(target);
+
+        // Scale to desired length along its local Z (it's modeled about 1.35 units total)
+        const modelLen = 1.35;
+        const scale = arrowLen / modelLen;
+        this.dashArrow.scale.set(scale, scale, scale);
+
+        this.setDashArrowVisible(true);
     }
 
     startLevel(levelNum) {
@@ -191,6 +267,13 @@ export class Game {
         // 3. Sync Mesh
         this.ballMesh.position.copy(this.ballBody.position);
         this.ballMesh.quaternion.copy(this.ballBody.quaternion);
+
+        // 3b. Update dash arrow if charging
+        if (this.dashState.charging) {
+            this.updateDashArrow();
+        } else {
+            this.setDashArrowVisible(false);
+        }
         
         // 4. Camera Follow
         const targetPos = this.ballMesh.position.clone();
@@ -248,6 +331,10 @@ export class Game {
             this.dashState.startX = this.dashState.currentX = t.clientX;
             this.dashState.startY = this.dashState.currentY = t.clientY;
             this.dashState.startTime = performance.now();
+            this.dashState.dirX = 0;
+            this.dashState.dirZ = 0;
+
+            this.setDashArrowVisible(false);
 
             e.preventDefault();
         }, { passive: false });
@@ -260,6 +347,21 @@ export class Game {
             this.dashState.currentX = t.clientX;
             this.dashState.currentY = t.clientY;
 
+            const dx = this.dashState.currentX - this.dashState.startX;
+            const dy = this.dashState.currentY - this.dashState.startY;
+            const len = Math.hypot(dx, dy);
+
+            if (len > 10) {
+                // Screen X => world +X, screen Y => world -Z
+                this.dashState.dirX = dx / len;
+                this.dashState.dirZ = -dy / len;
+                this.updateDashArrow();
+            } else {
+                this.dashState.dirX = 0;
+                this.dashState.dirZ = 0;
+                this.setDashArrowVisible(false);
+            }
+
             e.preventDefault();
         }, { passive: false });
 
@@ -268,6 +370,7 @@ export class Game {
             if (!this.dashState.charging) return;
 
             this.dashState.charging = false;
+            this.setDashArrowVisible(false);
 
             const dx = clientX - this.dashState.startX;
             const dy = clientY - this.dashState.startY;
@@ -314,6 +417,7 @@ export class Game {
 
         target.addEventListener('touchcancel', () => {
             this.dashState.charging = false;
+            this.setDashArrowVisible(false);
         });
     }
     
