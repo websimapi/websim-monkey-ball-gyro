@@ -42,6 +42,11 @@ export class Game {
             dirZ: 0
         };
 
+        // Reusable vectors for converting screen drags to world directions
+        this._tmpForward = new THREE.Vector3();
+        this._tmpRight = new THREE.Vector3();
+        this._tmpDir = new THREE.Vector3();
+
         // Visual arrow for dash direction
         this.dashArrow = null;
     }
@@ -309,6 +314,47 @@ export class Game {
         this.renderer.render(this.scene, this.camera);
     }
 
+    /**
+     * Convert a 2D screen drag (dx, dy in pixels) into a world-space direction (x,z)
+     * aligned with the camera, so dragging matches what you see on screen.
+     */
+    screenDragToWorldDir(dx, dy) {
+        // If drag is too small, treat as no direction
+        const len2 = dx * dx + dy * dy;
+        if (len2 < 1) {
+            return { x: 0, z: 0, length: 0 };
+        }
+
+        // Camera forward (where it is looking)
+        this.camera.getWorldDirection(this._tmpForward);
+        this._tmpForward.y = 0;
+        if (this._tmpForward.lengthSq() < 1e-4) {
+            this._tmpForward.set(0, 0, -1);
+        }
+        this._tmpForward.normalize();
+
+        // Camera right (perpendicular on XZ plane)
+        this._tmpRight.crossVectors(this._tmpForward, new THREE.Vector3(0, 1, 0));
+        if (this._tmpRight.lengthSq() < 1e-4) {
+            this._tmpRight.set(1, 0, 0);
+        }
+        this._tmpRight.normalize();
+
+        // Map drag to world: right for +dx, forward for upward drag (-dy)
+        this._tmpDir.set(0, 0, 0);
+        this._tmpDir.addScaledVector(this._tmpRight, dx);
+        this._tmpDir.addScaledVector(this._tmpForward, -dy);
+        this._tmpDir.y = 0;
+
+        const length = this._tmpDir.length();
+        if (length < 1e-3) {
+            return { x: 0, z: 0, length: 0 };
+        }
+        this._tmpDir.multiplyScalar(1 / length);
+
+        return { x: this._tmpDir.x, z: this._tmpDir.z, length };
+    }
+
     setupDashControls() {
         const target = this.renderer.domElement;
 
@@ -349,12 +395,16 @@ export class Game {
 
             const dx = this.dashState.currentX - this.dashState.startX;
             const dy = this.dashState.currentY - this.dashState.startY;
-            const len = Math.hypot(dx, dy);
 
-            if (len > 10) {
-                // Screen X => world +X, screen Y => world -Z (align with finger drag)
-                this.dashState.dirX = dx / len;
-                this.dashState.dirZ = -dy / len;
+            const dir = this.screenDragToWorldDir(dx, dy);
+
+            if (dir.length > 10) {
+                this.dashState.dirX = dir.x;
+                this.dashState.dirZ = dir.z;
+                this.updateDashArrow();
+            } else if (dir.length > 0) {
+                this.dashState.dirX = dir.x;
+                this.dashState.dirZ = dir.z;
                 this.updateDashArrow();
             } else {
                 this.dashState.dirX = 0;
@@ -375,15 +425,11 @@ export class Game {
             const dx = clientX - this.dashState.startX;
             const dy = clientY - this.dashState.startY;
 
-            const len = Math.hypot(dx, dy);
-            if (!this.ballBody || len < 10) {
-                // Too small a swipe, ignore
+            const dir = this.screenDragToWorldDir(dx, dy);
+            if (!this.ballBody || dir.length < 10) {
+                // Too small / unclear swipe, ignore
                 return;
             }
-
-            // Screen X => world +X, screen Y => world -Z (align with finger drag)
-            let dirX = dx / len;
-            let dirZ = -dy / len;
 
             // Charge time determines strength
             const now = performance.now();
@@ -396,9 +442,9 @@ export class Game {
             const strength = baseStrength + extraStrength * charge;
 
             const impulse = new CANNON.Vec3(
-                dirX * strength,
+                dir.x * strength,
                 strength * 0.5, // slight upward jump
-                dirZ * strength
+                dir.z * strength
             );
 
             this.ballBody.applyImpulse(impulse, this.ballBody.position);
