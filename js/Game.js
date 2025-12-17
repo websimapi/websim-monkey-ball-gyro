@@ -27,7 +27,8 @@ export class Game {
         this.timeLeft = 60;
         this.clock = new THREE.Clock();
         
-        this.cameraOffset = new THREE.Vector3(0, 5, 8);
+        this.cameraOffset = new THREE.Vector3(0, 10, 10);
+        this.cameraLerpFactor = 0.12;
     }
 
     init() {
@@ -180,10 +181,10 @@ export class Game {
         
         // 4. Camera Follow
         const targetPos = this.ballMesh.position.clone();
-        // Camera lags slightly or just fix offset? Fixed offset is tighter for gameplay
-        this.camera.position.x = targetPos.x + this.cameraOffset.x;
-        this.camera.position.y = targetPos.y + this.cameraOffset.y;
-        this.camera.position.z = targetPos.z + this.cameraOffset.z;
+        const desiredPos = targetPos.clone().add(this.cameraOffset);
+        
+        // Smooth follow behind and above the ball
+        this.camera.position.lerp(desiredPos, this.cameraLerpFactor);
         this.camera.lookAt(targetPos);
         
         // 5. Game Logic
