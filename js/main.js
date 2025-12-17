@@ -1,10 +1,24 @@
 import { Game } from './Game.js';
 
-const startBtn = document.getElementById('start-btn');
-const overlay = document.getElementById('overlay');
-const messageEl = document.getElementById('message');
+const menus = {
+    start: document.getElementById('menu-start'),
+    calibrate: document.getElementById('menu-calibrate'),
+    result: document.getElementById('menu-result')
+};
+
+const buttons = {
+    start: document.getElementById('btn-start'),
+    calibrate: document.getElementById('btn-calibrate'),
+    next: document.getElementById('btn-next')
+};
+
+const resultText = {
+    title: document.getElementById('result-title'),
+    msg: document.getElementById('result-msg')
+};
 
 let game = null;
+let currentLevel = 1;
 
 async function init() {
     game = new Game();
@@ -18,46 +32,64 @@ async function init() {
     animate();
 }
 
-startBtn.addEventListener('click', async () => {
-    // Request Device Orientation Permission for iOS 13+
+function showMenu(name) {
+    Object.values(menus).forEach(m => m.classList.add('hidden'));
+    if (menus[name]) menus[name].classList.remove('hidden');
+}
+
+// 1. Start Button Logic
+buttons.start.addEventListener('click', async () => {
+    // Request Permission
     if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         try {
             const response = await DeviceOrientationEvent.requestPermission();
             if (response === 'granted') {
-                startGame();
+                toCalibration();
             } else {
-                alert('Permission denied. Gyro controls required.');
+                alert('Gyro permission is needed to play!');
             }
         } catch (e) {
             console.error(e);
-            alert('Error requesting gyro permission.');
+            toCalibration(); // Try anyway, might be non-iOS error
         }
     } else {
-        // Non-iOS 13+ devices
-        startGame();
+        toCalibration();
     }
 });
 
-function startGame() {
-    overlay.classList.add('hidden');
-    game.startLevel(1);
+function toCalibration() {
+    showMenu('calibrate');
 }
 
-// Expose handle for game over/win callbacks
-window.showOverlay = (msg, buttonText, callback) => {
-    messageEl.innerText = msg;
-    startBtn.innerText = buttonText;
+// 2. Calibration Logic
+buttons.calibrate.addEventListener('click', () => {
+    game.calibrate();
+    startGame(1);
+});
+
+// 3. Game Flow
+function startGame(level) {
+    currentLevel = level;
+    showMenu(null); // Hide all
+    game.startLevel(level);
+}
+
+// 4. Result Menu Handlers
+window.showOverlay = (title, btnText, callback) => {
+    resultText.title.innerText = title;
+    resultText.msg.innerText = title.includes("WIN") || title.includes("CLEAR") ? "Good rolling!" : "Keep trying!";
+    buttons.next.innerText = btnText;
     
-    // Remove old listeners
-    const newBtn = startBtn.cloneNode(true);
-    startBtn.parentNode.replaceChild(newBtn, startBtn);
+    // Recreate button to clear listeners
+    const newBtn = buttons.next.cloneNode(true);
+    buttons.next.parentNode.replaceChild(newBtn, buttons.next);
+    buttons.next = newBtn;
     
-    newBtn.addEventListener('click', () => {
-        overlay.classList.add('hidden');
+    buttons.next.addEventListener('click', () => {
         if (callback) callback();
     });
     
-    overlay.classList.remove('hidden');
+    showMenu('result');
 };
 
 init();

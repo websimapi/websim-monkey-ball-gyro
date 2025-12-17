@@ -1,6 +1,8 @@
 export class InputManager {
     constructor() {
         this.tilt = { x: 0, y: 0 };
+        this.raw = { x: 0, y: 0 };
+        this.offset = { x: 0, y: 0 };
         this.keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, w: false, a: false, s: false, d: false };
         
         // Gyro
@@ -15,18 +17,29 @@ export class InputManager {
         // beta: x-axis (-180 to 180) - Forward/Back
         // gamma: y-axis (-90 to 90) - Left/Right
         
-        let x = event.gamma; // Left/Right
-        let y = event.beta;  // Forward/Back
+        // Store raw values
+        if (event.gamma !== null) this.raw.x = event.gamma;
+        if (event.beta !== null) this.raw.y = event.beta;
         
-        // Handle landscape modes quirks if necessary, but standard locking usually works
-        // Normalize to -1...1 for about 45 degrees tilt
+        this.updateTilt();
+    }
+
+    calibrate() {
+        // Set current raw values as zero offset
+        this.offset.x = this.raw.x;
+        this.offset.y = this.raw.y;
+        this.updateTilt();
+    }
+
+    updateTilt() {
+        const maxTilt = 25; // Degrees for max speed
         
-        const maxTilt = 30;
+        // Apply calibration offset
+        let x = this.raw.x - this.offset.x;
+        let y = this.raw.y - this.offset.y;
         
-        if (x === null || y === null) return; // Desktop
-        
+        // Normalize to -1...1
         this.tilt.x = Math.max(-1, Math.min(1, x / maxTilt));
-        // Assume flat hold (0 degrees) is neutral.
         this.tilt.y = Math.max(-1, Math.min(1, y / maxTilt));
     }
 
