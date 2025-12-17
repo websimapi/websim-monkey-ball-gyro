@@ -118,6 +118,103 @@ export class LevelManager {
                     "WWWWW"
                 ],
                 scale: 2
+            },
+            // Level 5: Zig Zag
+            {
+                map: [
+                    "WWWWWWWW",
+                    "W.S....W",
+                    "WWWWWW.W",
+                    "W......W",
+                    "W.WWWWWW",
+                    "W......W",
+                    "WWWWWW.W",
+                    "W...G..W",
+                    "WWWWWWWW"
+                ],
+                scale: 2
+            },
+            // Level 6: Spiral
+            {
+                map: [
+                    "WWWWWWWWWWW",
+                    "W.S.......W",
+                    "W.WWWWWWW.W",
+                    "W.W.....W.W",
+                    "W.W.WG..W.W",
+                    "W.W.WWWWW.W",
+                    "W.W.......W",
+                    "W.WWWWWWWWW",
+                    "W.........W",
+                    "WWWWWWWWWWW"
+                ],
+                scale: 2
+            },
+            // Level 7: Dual Path
+            {
+                map: [
+                    "WWWWWWWWW",
+                    "W...S...W",
+                    "W.W...W.W",
+                    "W.W...W.W",
+                    "W.W...W.W",
+                    "W...O...W",
+                    "W.W...W.W",
+                    "W.W...W.W",
+                    "W...G...W",
+                    "WWWWWWWWW"
+                ],
+                scale: 2
+            },
+             // Level 8: Swiss Cheese
+             {
+                map: [
+                    "WWWWWWWWWW",
+                    "W.S......W",
+                    "W.O.O.O.OW",
+                    "W........W",
+                    "W.O.O.O.OW",
+                    "W........W",
+                    "W.O.O.O.OW",
+                    "W.....G..W",
+                    "WWWWWWWWWW"
+                ],
+                scale: 2
+            },
+            // Level 9: Tightrope
+            {
+                map: [
+                    "WWWWWWW",
+                    "W..S..W",
+                    "W.....W",
+                    "  . .  ",
+                    "  . .  ",
+                    "  . .  ",
+                    "WW. .WW",
+                    "W.....W",
+                    "W..G..W",
+                    "WWWWWWW"
+                ],
+                scale: 2
+            },
+            // Level 10: Grand Finale
+            {
+                map: [
+                    "WWWWWWWWWWWWW",
+                    "W.S.........W",
+                    "WWWWWW.WWWW.W",
+                    "     W.W  W.W",
+                    "     W.W  W.W",
+                    "WWWWWW.W  W.W",
+                    "W......W  W.W",
+                    "W.WWWWWW  W.W",
+                    "W.W       W.W",
+                    "W.W  WWWWWW.W",
+                    "W.W  W.G....W",
+                    "W....W......W",
+                    "WWWWWWWWWWWWW"
+                ],
+                scale: 2
             }
         ];
 

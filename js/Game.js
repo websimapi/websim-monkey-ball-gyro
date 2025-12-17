@@ -59,7 +59,11 @@ export class Game {
 
         // Init Physics
         this.world = new CANNON.World();
-        this.world.gravity.set(0, -20, 0); // Stronger gravity for tighter feel
+        this.world.gravity.set(0, -30, 0); // Strong gravity for snappy response
+        this.world.broadphase = new CANNON.SAPBroadphase(this.world);
+        this.world.solver.iterations = 20; // Increase solver iterations for stability
+        this.world.defaultContactMaterial.friction = 0.1; 
+        this.world.defaultContactMaterial.restitution = 0.2;
         
         // Managers
         this.levelManager = new LevelManager(this.scene, this.world);
@@ -105,7 +109,9 @@ export class Game {
             mass: 1,
             shape: shape,
             linearDamping: 0.3, // Dampen rolling slightly
-            angularDamping: 0.3
+            angularDamping: 0.3,
+            ccdSpeedThreshold: 1,
+            ccdIterations: 10
         });
         this.world.addBody(this.ballBody);
     }
@@ -149,7 +155,7 @@ export class Game {
         // Tilt gravity vector
         // Forward tilt (negative Y input) -> Gravity pushes -Z
         // Right tilt (positive X input) -> Gravity pushes +X
-        const gravityMag = 20;
+        const gravityMag = 30;
         const tiltX = input.x * 0.5; // Scale tilt effect
         const tiltZ = input.y * 0.5;
         
@@ -166,7 +172,7 @@ export class Game {
         this.levelManager.setVisualTilt(input.y * 0.2, -input.x * 0.2); // Small visual tilt
 
         // 2. Step Physics
-        this.world.step(1 / 60, dt, 3);
+        this.world.step(1 / 60, dt, 10);
         
         // 3. Sync Mesh
         this.ballMesh.position.copy(this.ballBody.position);

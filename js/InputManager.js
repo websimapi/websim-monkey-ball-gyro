@@ -49,10 +49,10 @@ export class InputManager {
         let y = this.tilt.y;
         
         // Keyboard overrides if present
-        if (this.keys.ArrowRight || this.keys.d) x = 0.5;
-        if (this.keys.ArrowLeft || this.keys.a) x = -0.5;
-        if (this.keys.ArrowUp || this.keys.w) y = -0.5;
-        if (this.keys.ArrowDown || this.keys.s) y = 0.5;
+        if (this.keys.ArrowRight || this.keys.d) x = 1.0;
+        if (this.keys.ArrowLeft || this.keys.a) x = -1.0;
+        if (this.keys.ArrowUp || this.keys.w) y = -1.0;
+        if (this.keys.ArrowDown || this.keys.s) y = 1.0;
         
         return { x, y };
     }
