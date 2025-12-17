@@ -352,9 +352,9 @@ export class Game {
             const len = Math.hypot(dx, dy);
 
             if (len > 10) {
-                // Screen X => world +X, screen Y => world -Z
-                this.dashState.dirX = dx / len;
-                this.dashState.dirZ = -dy / len;
+                // Screen X => world -X, screen Y => world +Z (align with perceived swipe direction)
+                this.dashState.dirX = -dx / len;
+                this.dashState.dirZ = dy / len;
                 this.updateDashArrow();
             } else {
                 this.dashState.dirX = 0;
@@ -381,9 +381,9 @@ export class Game {
                 return;
             }
 
-            // Screen X => world +X, screen Y => world -Z
-            let dirX = dx / len;
-            let dirZ = -dy / len;
+            // Screen X => world -X, screen Y => world +Z (align with perceived swipe direction)
+            let dirX = -dx / len;
+            let dirZ = dy / len;
 
             // Charge time determines strength
             const now = performance.now();
