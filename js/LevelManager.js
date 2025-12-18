@@ -331,41 +331,13 @@ export class LevelManager {
 
     createGoal(x, y, z) {
         this.goalPos = new THREE.Vector3(x, y, z);
-        const geometry = new THREE.CylinderGeometry(1.5, 1.5, 4, 16, 1, true);
-        const mesh = new THREE.Mesh(geometry, this.goalMat);
-        // Animate or rotate goal? 
-        // We'll just place it.
-        mesh.position.set(x, y + 2, z);
         
-        // Add a glow/spinner
-        const spinner = new THREE.Mesh(
-            new THREE.TorusGeometry(1, 0.1, 8, 16), 
-            new THREE.MeshBasicMaterial({ color: 0xff0000 })
-        );
-        mesh.add(spinner);
-        
-        this.levelGroup.add(mesh);
-        this.goalMesh = mesh;
-    }
-
-    checkGoal(ballPos) {
-        if (!this.goalPos) return false;
-        // Check XZ distance
-        const dx = ballPos.x - this.goalPos.x;
-        const dz = ballPos.z - this.goalPos.z;
-        const dist = Math.sqrt(dx*dx + dz*dz);
-        return dist < 2.0;
-    }
-}
-
-    createGoal(x, y, z) {
-        this.goalPos = new THREE.Vector3(x, y, z);
-        
-        // Visual Goal
+        // Visual Goal - Floor Target
         const geometry = new THREE.PlaneGeometry(3, 3);
         const mesh = new THREE.Mesh(geometry, this.goalMat);
         mesh.rotation.x = -Math.PI / 2;
         mesh.position.set(x, y + 0.05, z);
+        
         this.levelGroup.add(mesh);
         this.goalMesh = mesh;
     }
