@@ -27,7 +27,7 @@ export class Game {
         this.timeLeft = 60;
         this.clock = new THREE.Clock();
         
-        this.cameraOffset = new THREE.Vector3(0, 10, 10);
+        this.cameraOffset = new THREE.Vector3(0, 12, 12);
         this.cameraLerpFactor = 0.12;
 
         // Dash / charge state
@@ -72,10 +72,12 @@ export class Game {
         const dirLight = new THREE.DirectionalLight(0xffffff, 1);
         dirLight.position.set(10, 20, 10);
         dirLight.castShadow = true;
-        dirLight.shadow.camera.top = 20;
-        dirLight.shadow.camera.bottom = -20;
-        dirLight.shadow.camera.left = -20;
-        dirLight.shadow.camera.right = 20;
+        dirLight.shadow.camera.top = 50;
+        dirLight.shadow.camera.bottom = -50;
+        dirLight.shadow.camera.left = -50;
+        dirLight.shadow.camera.right = 50;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
         this.scene.add(dirLight);
 
         // Init Physics

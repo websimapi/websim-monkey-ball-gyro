@@ -43,191 +43,133 @@ export class LevelManager {
     loadLevel(levelNum) {
         this.currentLevelIndex = levelNum;
         const levels = [
-            // Level 1: Gentle Rail Run (long straight with rails)
+            // Level 1: Green Valley Raceway
+            // Iconic starter: Wide, walled, gentle winding S-shape.
             {
                 map: [
-                    "WWWWWWWWWW",
-                    "W........W",
-                    "W.S......W",
-                    "W........W",
-                    "W........W",
-                    "W........W",
-                    "W........W",
-                    "W........W",
-                    "W........W",
-                    "W......G.W",
-                    "W........W",
-                    "W........W",
-                    "WWWWWWWWWW"
+                    "WWWWWWWWWWWWWWWWWWWW",
+                    "W..................W",
+                    "W.S................W",
+                    "W..................W",
+                    "WWWWWWWWWWWWWW.....W",
+                    "             W.....W",
+                    "             W.....W",
+                    "    WWWWWWWWWW.....W",
+                    "    W..............W",
+                    "    W..............W",
+                    "    W......WWWWWWWWW",
+                    "    W......W        ",
+                    "    W......W        ",
+                    "    W......WWWWWWWWW",
+                    "    W..............W",
+                    "    W..............W",
+                    "    WWWWWWWWWW.....W",
+                    "             W.....W",
+                    "             W..G..W",
+                    "             WWWWWWW"
                 ],
                 scale: 2
             },
-            // Level 2: Curvy Rail Canyon (rails, soft turns)
+            // Level 2: Aqua Hairpin
+            // A long straight into a wide U-turn.
             {
                 map: [
-                    "WWWWWWWWWWWW",
-                    "W..........W",
-                    "W.S........W",
-                    "W..........W",
-                    "W....WWWWWWW",
-                    "W..........W",
-                    "W..........W",
-                    "WWWWWWW....W",
-                    "W..........W",
-                    "W.......G..W",
-                    "W..........W",
-                    "W..........W",
-                    "WWWWWWWWWWWW"
+                    "WWWWWWWWWWWWWWWWWWWW",
+                    "W.S................W",
+                    "W..................W",
+                    "WWWWWWWWWWWWWW.....W",
+                    "             W.....W",
+                    "             W.....W",
+                    "             W.....W",
+                    "             W.....W",
+                    "WWWWWWWWWWWWWW.....W",
+                    "W..................W",
+                    "W...O..O..O..O.....W",
+                    "W..................W",
+                    "W.....WWWWWWWWWWWWWW",
+                    "W.....W             ",
+                    "W.....WWWWWWWWWWWWWW",
+                    "W..................W",
+                    "W..................W",
+                    "WWWWWWWWWWWW....G..W",
+                    "           WWWWWWWWW"
                 ],
                 scale: 2
             },
-            // Level 3: Rail Bridges with Holes (last level with rails)
+            // Level 3: Golden Zig-Zag
+            // Sharp 90 degree turns, still walled.
             {
                 map: [
-                    "WWWWWWWWWW",
-                    "W.S......W",
-                    "W....O...W",
-                    "W........W",
-                    "W..O.O...W",
-                    "W........W",
-                    "W....O...W",
-                    "W........W",
-                    "W...G....W",
-                    "W........W",
-                    "W........W",
-                    "WWWWWWWWWW"
+                    "      WWWWWWWW      ",
+                    "      W......W      ",
+                    "      W..S...W      ",
+                    "      W......W      ",
+                    "      W...WWWW      ",
+                    "      W...W         ",
+                    "WWWWWWW...WWWWWWWW  ",
+                    "W................W  ",
+                    "W................W  ",
+                    "WWWWWWWWWWWW.....W  ",
+                    "           W.....W  ",
+                    "           W.....W  ",
+                    "  WWWWWWWWWW.....W  ",
+                    "  W..............W  ",
+                    "  W..............W  ",
+                    "  W.....WWWWWWWWWW  ",
+                    "  W.....W           ",
+                    "  W.....W           ",
+                    "  W..G..W           ",
+                    "  WWWWWWW           "
                 ],
                 scale: 2
             },
-            // Level 4: Open Sky Steps (no continuous rails, floating pads)
+            // Level 4: Sky Plains (No walls)
+            // Wide open track, easy mode racing.
             {
                 map: [
-                    "           ",
-                    "     S     ",
-                    "     .     ",
-                    "     .     ",
-                    "    ...    ",
-                    "           ",
-                    "      .    ",
-                    "      .    ",
-                    "     ...   ",
-                    "           ",
-                    "       .   ",
-                    "       .   ",
-                    "      .G.  ",
-                    "           "
+                    "....................",
+                    "...S................",
+                    "....................",
+                    "....................",
+                    "..............      ",
+                    "..............      ",
+                    "..............      ",
+                    "    ..........      ",
+                    "    ..........      ",
+                    "    ..........      ",
+                    "    ..........      ",
+                    "    ..........      ",
+                    "    ..........      ",
+                    "              ......",
+                    "              ......",
+                    "              ......",
+                    "              ......",
+                    "              ...G..",
+                    "              ......"
                 ],
                 scale: 2
             },
-            // Level 5: Long Zig-Zag Ridge (few walls, lots of void)
+            // Level 5: Dual Lane Highway
+            // Open, with obstacles/holes in middle
             {
                 map: [
-                    "               ",
-                    "       S       ",
-                    "      ...      ",
-                    "           ... ",
-                    "           ... ",
-                    "      ...      ",
-                    "   ...         ",
-                    "   ...         ",
-                    "      ...      ",
-                    "          ...  ",
-                    "          ...  ",
-                    "      ...      ",
-                    "      .G.      ",
-                    "               "
-                ],
-                scale: 2
-            },
-            // Level 6: Island Hops (small pads, no rails)
-            {
-                map: [
-                    "               ",
-                    "       S       ",
-                    "               ",
-                    "    .   .      ",
-                    "               ",
-                    "      .   .    ",
-                    "               ",
-                    "    .   .      ",
-                    "               ",
-                    "      .   .    ",
-                    "               ",
-                    "        .G.    ",
-                    "               "
-                ],
-                scale: 2
-            },
-            // Level 7: Holey Highway (wide path, many holes, no rails)
-            {
-                map: [
-                    "................",
-                    "......S.........",
-                    "................",
-                    "...O..O..O..O...",
-                    "................",
-                    ".....O......O...",
-                    "................",
-                    "....O..O..O.....",
-                    "................",
-                    "..........G.....",
-                    "................"
-                ],
-                scale: 2
-            },
-            // Level 8: Split Fork (two main routes, open edges)
-            {
-                map: [
-                    "                   ",
-                    "         S         ",
-                    "        ...        ",
-                    "       .   .       ",
-                    "      .     .      ",
-                    "     .       .     ",
-                    "     .       .     ",
-                    "      .     .      ",
-                    "       .   .       ",
-                    "        .G.        ",
-                    "                   "
-                ],
-                scale: 2
-            },
-            // Level 9: Skinny Serpent (very narrow path, no rails)
-            {
-                map: [
-                    "                   ",
-                    "         S         ",
-                    "         .         ",
-                    "         .         ",
-                    "        .          ",
-                    "        .          ",
-                    "         .         ",
-                    "         .         ",
-                    "          .        ",
-                    "          .        ",
-                    "         .         ",
-                    "         .         ",
-                    "          .        ",
-                    "          G        ",
-                    "                   "
-                ],
-                scale: 2
-            },
-            // Level 10: Grand Skyline (long, wide, playful platforms)
-            {
-                map: [
-                    "........................",
-                    "..........S.............",
-                    "........................",
-                    "....O..............O....",
-                    "........................",
-                    "......O..........O......",
-                    "........................",
-                    "...O..............O.....",
-                    "........................",
-                    "...........G............",
-                    "........................",
-                    "........................"
+                    "....................",
+                    ".......S............",
+                    "....................",
+                    ".....O.......O......",
+                    "....................",
+                    "....................",
+                    ".....O.......O......",
+                    "....................",
+                    "....................",
+                    ".......O...O........",
+                    "....................",
+                    "....................",
+                    "....................",
+                    ".....O.......O......",
+                    "....................",
+                    ".......G............",
+                    "...................."
                 ],
                 scale: 2
             }
@@ -242,30 +184,21 @@ export class LevelManager {
     }
 
     applyTheme(levelNum) {
-        // Base bright palette, tweak per level for variety
+        // Tints for the checkered floor (Green base)
         const floorColors = [
-            0x9be15d, // L1 fresh green
-            0x7ed6ff, // L2 aqua
-            0xffe66d, // L3 sunny
-            0xff9ff3, // L4 pink
-            0xffc048, // L5 orange
-            0x7bed9f, // L6 mint
-            0x70a1ff, // L7 blue
-            0xff6b81, // L8 coral
-            0x1dd1a1, // L9 teal
-            0xfeca57  // L10 gold
+            0xffffff, // L1: Natural Green
+            0x00ffff, // L2: Aqua/Teal (Green*Cyan)
+            0xffff00, // L3: Lime/Gold (Green*Yellow)
+            0xffddff, // L4: Light Purple tint
+            0xdddddd  // L5: Standard
         ];
+        
         const wallColors = [
-            0xd35400,
-            0x6c5ce7,
-            0xe84393,
-            0x2d3436,
-            0x0984e3,
-            0x00b894,
-            0xd63031,
-            0x00cec9,
-            0xfdcb6e,
-            0xfd79a8
+            0xff8c00, // L1: Dark Orange walls
+            0x00bfff, // L2: Deep Sky Blue
+            0xffd700, // L3: Gold
+            0xdda0dd, // L4: Plum
+            0xff6347  // L5: Tomato
         ];
 
         const idx = (levelNum - 1) % floorColors.length;
@@ -300,7 +233,8 @@ export class LevelManager {
                 
                 // Floor block for everyone except void
                 if (char !== 'O') { // O is hole
-                    this.createBlock(x, -0.5, z, scale, 1, scale, this.floorMat, false);
+                    // Create deep floor to prevent clipping/viewing issues
+                    this.createBlock(x, -2.5, z, scale, 5, scale, this.floorMat, false);
                 }
 
                 if (char === 'W') {
